@@ -695,6 +695,106 @@ Directory enumeration and probing requests were observed in the initial phase of
 
 \textbf{Analysis:} The attacker systematically probed for common administrative paths and sensitive files. Notable discoveries include accessible /admin/, /api/, and /uploads/ directories.
 
+%FTP Attacks
+\subsection{FTP Attacks}
+
+Traffic analysis reveals a concentrated effort to compromise the FTP service, starting with anonymous reconnaissance followed by a dictionary attack.
+
+\subsubsection{Finding \#19: FTP Brute Force}
+
+\begin{attackbox}{FTP - Credential Stuffing}
+\textbf{Packet Range:} 940 - 1231\\
+\textbf{Target Endpoint:} Port 21 (vsFTPd 3.0.3)\\
+\textbf{Payloads Observed:}
+\begin{lstlisting}
+Packet 940: USER anonymous (Login Successful)
+Packet 960: USER admin / Packet 966: 530 Login incorrect
+Packet 976: USER admin / Packet 982: 530 Login incorrect
+\end{lstlisting}
+\textbf{Server Response:} Multiple 530 Login incorrect responses detected.
+\end{attackbox}
+
+\textbf{Analysis:} The attacker first verified connectivity with an anonymous login (Packet 940). Following this, a dictionary attack was launched against the 'admin' user starting at Packet 960, resulting in multiple authentication failures.
+
+\subsection{Persistence \& Web Shell Activity}
+
+Following command injection attempts, the attacker tried to establish a permanent backdoor.
+
+\subsubsection{Finding \#20: Backdoor Creation Attempt}
+
+\begin{attackbox}{Persistence - Web Shell Injection}
+\textbf{Packet Number:} 1428\\
+\textbf{Target Endpoint:} /system.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /system.php?cmd=echo 'backdoor' > /tmp/persist.sh HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} At Packet 1428, the attacker attempted to write a file named \texttt{persist.sh} to the \texttt{/tmp/} directory using the command injection vulnerability. A second attempt was observed at Packet 2974.
+
+\subsection{Information Disclosure}
+
+\subsubsection{Finding \#21: API Data Leak}
+
+\begin{attackbox}{Info Disclosure - User Enumeration}
+\textbf{Packet Range:} 825 - 1364\\
+\textbf{Target Endpoint:} /api/users\\
+\textbf{Payloads Observed:}
+\begin{lstlisting}
+Packet 825: GET /api/users?id=1
+Packet 835: GET /api/users?id=2
+Packet 1364: GET /api/users?limit=100&offset=100
+\end{lstlisting}
+\end{attackbox}
+
+\textbf{Analysis:} The attacker sequentially enumerated user IDs starting at Packet 825. Later, at Packet 1364, an attempt was made to retrieve a bulk list of users using limit/offset parameters.
+
+%Additional Misconfigurations \& Probes
+\subsection{Additional Misconfigurations \& Probes}
+
+Further analysis identified critical information disclosure and targeted probing of upload functionality.
+
+\subsubsection{Finding \#22: System Metrics Exposure}
+
+\begin{attackbox}{Info Disclosure - Prometheus Metrics}
+\textbf{Packet Number:} 30\\
+\textbf{Target Endpoint:} /metrics\\
+\textbf{Response Code:} 200 OK (text/plain)\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /metrics HTTP/1.1
+\end{lstlisting}
+\end{attackbox}
+
+\textbf{Analysis:} The server exposes a \texttt{/metrics} endpoint (Packet 30) which returned a \texttt{200 OK} status with \texttt{text/plain} content. This is characteristic of **Prometheus** exporters, which often leak sensitive infrastructure details like software versions, memory usage, and connected client counts.
+
+\subsubsection{Finding \#23: File Upload Probing}
+
+\begin{attackbox}{Probing - Malicious File Upload}
+\textbf{Packet Number:} 1402\\
+\textbf{Target Endpoint:} /upload.php\\
+\textbf{Method:} POST\\
+\textbf{Response Code:} 404 Not Found
+\end{attackbox}
+
+\textbf{Analysis:} At Packet 1402, the attacker attempted to \texttt{POST} data to \texttt{/upload.php}. While the server responded with 404, this indicates the attacker was actively searching for a file upload vector to potentially deploy the web shell identified in Finding \#20.
+
+\subsubsection{Finding \#24: Stored XSS Attempts}
+
+\begin{attackbox}{XSS - Stored Payload Injection}
+\textbf{Packet Number:} 506, 516, 526\\
+\textbf{Target Endpoint:} /comment.php\\
+\textbf{Method:} POST\\
+\textbf{Payload Context:}
+\begin{lstlisting}
+POST /comment.php (application/x-www-form-urlencoded)
+\end{lstlisting}
+\end{attackbox}
+
+\textbf{Analysis:} Unlike the previous GET-based Reflected XSS attempts, these packets (506-526) use the \texttt{POST} method. This confirms the attacker was attempting to perform **Stored Cross-Site Scripting** by saving malicious scripts into the application's comment database.
+
 % Attack Timeline
 \section{Attack Timeline}
 
