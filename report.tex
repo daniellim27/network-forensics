@@ -15,6 +15,7 @@
 \usepackage{tcolorbox}
 \usepackage{listings}
 \usepackage{longtable}
+\usepackage{verbatim}
 
 % Page geometry
 \geometry{margin=1in}
@@ -81,7 +82,7 @@
     
     \vspace{1.5cm}
     
-    {\Large\textbf{Chain of Custody Documentation}}
+    {\Large\textbf{Comprehensive Investigation Report}}
     
     \vspace{2cm}
     
@@ -161,126 +162,217 @@ The investigation focuses on network traffic analysis captured from a controlled
     \item Reconstruct attacker methodology and timeline
 \end{enumerate}
 
-% Evidence Details
-\section{Evidence Details}
+% Technical Environment
+\section{Technical Environment}
 
-\subsection{Primary Evidence File}
+\subsection{System Specifications}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Attribute} & \textbf{Value} \\
-\hline
-File Name & capture\_final.pcap \\
-\hline
-File Type & PCAP (Packet Capture) \\
-\hline
-Capture Interface & lo (loopback) \\
-\hline
-Capture Duration & 15 minutes \\
-\hline
-\end{tabular}
-\caption{Evidence File Information}
-\end{table}
+\begin{description}
+    \item[Operating System] Debian GNU/Linux 11 (Bullseye)
+    \item[Kernel] Linux 5.10.0-36-cloud-amd64
+    \item[Architecture] x86\_64
+\end{description}
 
-\subsection{Capture Environment}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Specification} & \textbf{Details} \\
-\hline
-Operating System & Debian GNU/Linux 11 (Bullseye) \\
-\hline
-Cloud Platform & Google Cloud Platform (GCP) \\
-\hline
-VM Instance Name & forensics-lab \\
-\hline
-Web Server & Apache/2.4.65 (Debian) \\
-\hline
-Capture Tool & tcpdump version 4.99.0 \\
-\hline
-\end{tabular}
-\caption{Capture Environment Specifications}
-\end{table}
-
-\subsection{Target Application}
-
-The target web application is identified as ``SecureCorp Portal'' with the following exposed endpoints:
-
+\textbf{Hardware Platform:}
 \begin{itemize}
-    \item \texttt{/login.php} - User authentication
-    \item \texttt{/products.php} - Product catalog
-    \item \texttt{/search.php} - Search functionality
-    \item \texttt{/profile.php} - User profiles
-    \item \texttt{/admin/} - Administrative panel
-    \item \texttt{/download.php} - File download handler
-    \item \texttt{/comment.php} - User comments
+    \item Provider: Google Cloud Platform (GCP)
+    \item Instance Type: e2-medium
+    \item vCPU: 2
+    \item RAM: 4GB
+    \item Storage: 20GB Standard Persistent Disk
+    \item Region: asia-southeast2-a
 \end{itemize}
 
-% Technical Specifications
-\section{Technical Specifications}
+\textbf{Network Configuration:}
+\begin{itemize}
+    \item Primary Interface: ens4 (external network)
+    \item Loopback Interface: lo (127.0.0.1 / ::1)
+    \item Internal IP: 10.184.0.2
+    \item External IP: 34.128.97.155
+\end{itemize}
 
-\subsection{File Metrics}
+\subsection{Installed Services}
 
+\textbf{Web Server:}
+\begin{itemize}
+    \item Software: Apache HTTP Server (Version 2.4.x)
+    \item Configuration: Default Debian configuration
+    \item Document Root: /var/www/html/
+    \item Listening Port: 80 (HTTP)
+    \item Status: Active and enabled
+\end{itemize}
+
+\textbf{FTP Server:}
+\begin{itemize}
+    \item Software: vsftpd (Very Secure FTP Daemon) Version 3.x
+    \item Configuration: Anonymous access enabled
+    \item Data Directory: /srv/ftp/
+    \item Control Port: 21
+    \item Passive Ports: 40000-50000
+    \item Status: Active and enabled
+\end{itemize}
+
+\subsection{Web Application Structure}
+
+\textbf{Deployed Files:}
+\begin{itemize}
+    \item /var/www/html/index.html (Homepage)
+    \item /var/www/html/login.php (Login form)
+    \item /var/www/html/products.php (Product listing)
+    \item /var/www/html/search.php (Search functionality)
+    \item /var/www/html/comment.php (Comment submission)
+    \item /var/www/html/admin/ (Administrative panel)
+    \item /var/www/html/api/users (API endpoint)
+\end{itemize}
+
+\textbf{FTP Structure:}
+\begin{itemize}
+    \item /srv/ftp/public/ (Public files)
+    \item /srv/ftp/confidential/ (Restricted area)
+    \item /srv/ftp/upload/ (Upload directory)
+\end{itemize}
+
+\subsection{Network Topology}
+
+\begin{verbatim}
++-----------------------------------------+
+|     Google Cloud Platform (GCP)         |
+|  Region: asia-southeast2-a              |
+|                                         |
+|  +-----------------------------------+  |
+|  |  VM Instance: forensics-lab       |  |
+|  |  OS: Debian 11                    |  |
+|  |                                   |  |
+|  |  +-------------+  +------------+  |  |
+|  |  |   Apache    |  |   vsftpd   |  |  |
+|  |  |   Port 80   |  |  Port 21   |  |  |
+|  |  +-------------+  +------------+  |  |
+|  |         |                |        |  |
+|  |         +--------+-------+        |  |
+|  |                  |                |  |
+|  |         +--------v--------+       |  |
+|  |         |   lo (loopback) |       |  |
+|  |         |   127.0.0.1     |       |  |
+|  |         |   ::1           |       |  |
+|  |         +-----------------+       |  |
+|  |                                   |  |
+|  +-----------------------------------+  |
+|                                         |
++-----------------------------------------+
+\end{verbatim}
+
+\subsection{Security Posture (Pre-Attack)}
+
+\textbf{Vulnerabilities Present:}
+\begin{itemize}
+    \item No input validation on web forms
+    \item SQL queries not using prepared statements
+    \item No output encoding (XSS vulnerable)
+    \item Insufficient path validation (directory traversal)
+    \item No rate limiting on FTP authentication
+    \item Anonymous FTP access enabled
+    \item No Web Application Firewall (WAF)
+    \item Default configurations not hardened
+\end{itemize}
+
+\textbf{Firewall Configuration:}
+\begin{itemize}
+    \item Port 80 (HTTP): Open
+    \item Port 21 (FTP): Open
+    \item Port 22 (SSH): Open (restricted to authorized IPs)
+    \item Passive FTP ports 40000-50000: Open
+\end{itemize}
+
+% Methodology
+\section{Methodology}
+
+\subsection{Investigation Overview}
+
+This forensic investigation follows industry-standard digital forensics procedures to ensure evidence integrity and admissibility. The investigation was conducted in accordance with:
+\begin{itemize}
+    \item RFC 3227: Guidelines for Evidence Collection and Archiving
+    \item NIST SP 800-86: Guide to Integrating Forensic Techniques into Incident Response
+    \item ISO/IEC 27037: Guidelines for identification, collection, acquisition, and preservation of digital evidence
+\end{itemize}
+
+\subsection{Evidence Collection}
+
+\textbf{Capture Tool:} tcpdump version 4.99.0 on Debian GNU/Linux 11
+
+\textbf{Capture Parameters:}
+\begin{itemize}
+    \item Interface: lo (loopback)
+    \item Snapshot Length: 262144 bytes (full packet capture)
+    \item Duration: 900 seconds (15 minutes)
+    \item Filter: None (capture all traffic)
+    \item Timestamp: System clock synchronized with NTP
+\end{itemize}
+
+\textbf{Capture Command:}
+\begin{lstlisting}[language=bash]
+sudo timeout 900 tcpdump -i lo -w ~/capture_final.pcap -v
+\end{lstlisting}
+
+\textbf{Capture Session Details:}
+\begin{itemize}
+    \item Start Time: 2026-01-05 02:36:53 UTC
+    \item End Time: 2026-01-05 02:51:53 UTC
+    \item Packets Captured: 3,487 (100\% capture quality, 0 dropped)
+\end{itemize}
+
+\subsection{Chain of Custody}
+
+\textbf{Evidence Identification:}
+\begin{itemize}
+    \item Evidence ID: NF-20260105-001
+    \item File Name: capture\_final.pcap
+    \item File Size: 896 KB
+\end{itemize}
+
+\textbf{Integrity Verification:}
+\begin{itemize}
+    \item MD5: \texttt{5d56ae74f1cf234e2843bdd289bf2928}
+    \item SHA256: \texttt{9a8e2f4d7dfb244460ccabbbf86275c869cce5aaafe4aa22a7a7843246df737f}
+    \item Generated: 2026-01-05 02:39:46 UTC
+\end{itemize}
+
+\textbf{Transfer Log:}
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|l|}
+\begin{tabular}{|l|l|l|l|}
 \hline
-\textbf{Metric} & \textbf{Value} \\
+\textbf{Date/Time} & \textbf{Action} & \textbf{Person} & \textbf{Location} \\
 \hline
-File Size & 896 KB \\
+2026-01-05 02:36:53 & Evidence Captured & jonathanleewin & forensics-lab \\
 \hline
-Total Packets & 3,487 \\
+2026-01-05 02:39:46 & Hashes Generated & jonathanleewin & forensics-lab \\
 \hline
-Capture Start Time & Monday, January 5, 2026 02:36:53 UTC \\
-\hline
-Capture Tool & tcpdump version 4.99.0 \\
+2026-01-05 (Analyze) & Analysis Commenced & jonathanleewin & Local Workstation \\
 \hline
 \end{tabular}
-\caption{Technical Metrics}
+\caption{Chain of Custody Log}
 \end{table}
 
-\subsection{Traffic Distribution}
+\subsection{Analysis Approach}
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|r|r|}
-\hline
-\textbf{Protocol} & \textbf{Packet Count} & \textbf{Percentage} \\
-\hline
-HTTP & 2,414 & 69.2\% \\
-\hline
-FTP & 520 & 14.9\% \\
-\hline
-TCP (Other) & 553 & 15.9\% \\
-\hline
-\textbf{Total} & \textbf{3,487} & \textbf{100\%} \\
-\hline
-\end{tabular}
-\caption{Traffic Distribution by Protocol}
-\end{table}
+The analysis was conducted in six phases:
+\begin{enumerate}
+    \item \textbf{Initial Assessment:} Verified packet integrity and reviewed capture statistics.
+    \item \textbf{Protocol Analysis:} Examined HTTP and FTP traffic for anomalies and authentication attempts.
+    \item \textbf{Attack Identification:} Applied display filters to identify signatures for SQLi, XSS, Directory Traversal, and Brute Force.
+    \item \textbf{Evidence Documentation:} Recorded specific packet numbers, timestamps, and payloads.
+    \item \textbf{Timeline Reconstruction:} Correlated findings to build a chronological attack narrative.
+    \item \textbf{Root Cause Analysis:} Identified exploited vulnerabilities and security gaps.
+\end{enumerate}
 
-% Integrity Verification
-\section{Integrity Verification}
+\subsection{Display Filters Used}
 
-Cryptographic hash values have been computed to ensure the integrity of the evidence file. These values should be verified before and after any access to the evidence.
-
-\begin{evidencebox}
-\textbf{Hash Values:}
-
-\textbf{MD5:}\\
-\texttt{5d56ae74f1cf234e2843bdd289bf2928}
-
-\vspace{0.5cm}
-
-\textbf{SHA-256:}\\
-\texttt{9a8e2f4d7dfb244460ccabbbf86275c869cce5aaafe4aa22a7a7843246df737f}
-\end{evidencebox}
-
-\textbf{Note:} The SHA-256 hash is the recommended verification method due to its stronger cryptographic properties.
+\begin{lstlisting}
+SQL Injection: http.request.uri contains "OR" or "UNION" or "SELECT"
+XSS: http.request.uri contains "script" or "alert" or "onerror"
+Directory Traversal: http.request.uri contains "../" or "etc/passwd"
+FTP Authentication: ftp.request.command == "USER" or "PASS"
+\end{lstlisting}
 
 % Detailed Findings
 \section{Detailed Attack Findings}
@@ -652,45 +744,6 @@ Continued attempts to access administrative functionality and establish persiste
 \hline
 \end{tabular}
 \caption{Attack Phase Timeline}
-\end{table}
-
-% Chain of Custody
-\section{Chain of Custody}
-
-\subsection{Evidence Collection}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|}
-\hline
-\textbf{Field} & \textbf{Details} \\
-\hline
-Collected By & jonathanleewin \\
-\hline
-Collection Date & Monday, January 5, 2026 02:39:46 UTC \\
-\hline
-Storage Location & forensics-lab:/home/jonathanleewin/capture\_final.pcap \\
-\hline
-\end{tabular}
-\caption{Evidence Collection Details}
-\end{table}
-
-\subsection{Chain of Custody Log}
-
-\begin{table}[h]
-\centering
-\begin{tabular}{|l|l|l|l|}
-\hline
-\textbf{Date/Time} & \textbf{Action} & \textbf{Personnel} & \textbf{Notes} \\
-\hline
-2026-01-05 02:36:53 & Capture Started & jonathanleewin & tcpdump initiated \\
-\hline
-2026-01-05 02:51:53 & Capture Ended & jonathanleewin & 15 min capture \\
-\hline
-2026-01-05 02:39:46 & Evidence Sealed & jonathanleewin & Hash computed \\
-\hline
-\end{tabular}
-\caption{Chain of Custody Timeline}
 \end{table}
 
 % Impact Assessment
