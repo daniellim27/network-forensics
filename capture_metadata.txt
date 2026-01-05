@@ -1,0 +1,40 @@
+═══════════════════════════════════════════════════════════
+NETWORK FORENSICS EVIDENCE - CHAIN OF CUSTODY
+═══════════════════════════════════════════════════════════
+
+CASE INFORMATION:
+Case ID: NF-20260105-001
+Date Created: Mon Jan  5 02:39:46 UTC 2026
+Investigator: jonathanleewin
+Location: forensics-lab
+
+EVIDENCE DETAILS:
+File Name: capture_final.pcap
+File Type: PCAP (Packet Capture)
+Capture Interface: lo (loopback)
+Capture Duration: 15 minutes
+System: Debian GNU/Linux 11 (Bullseye)
+Platform: Google Cloud Platform (GCP)
+VM Instance: forensics-lab
+
+TECHNICAL SPECIFICATIONS:
+File Size: 896K
+Total Packets: 3487
+Capture Start: Mon Jan  5 02:36:53 UTC 2026
+Capture Tool: tcpdump version tcpdump version 4.99.0
+
+INTEGRITY VERIFICATION:
+MD5 Hash:    5d56ae74f1cf234e2843bdd289bf2928
+SHA256 Hash: 9a8e2f4d7dfb244460ccabbbf86275c869cce5aaafe4aa22a7a7843246df737f
+
+EVIDENCE SUMMARY:
+- HTTP Traffic: 2414 packets
+- FTP Traffic: 520 packets
+- Attack Types: SQL Injection, XSS, Directory Traversal, FTP Brute Force
+
+CHAIN OF CUSTODY:
+Collected by: jonathanleewin
+Collection Date: Mon Jan  5 02:39:46 UTC 2026
+Storage Location: forensics-lab:/home/jonathanleewin/capture_final.pcap
+
+═══════════════════════════════════════════════════════════

