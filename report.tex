@@ -394,8 +394,13 @@ SQL Injection attacks were the most prevalent attack type observed, targeting mu
 \begin{lstlisting}
 GET /login.php?user=test' OR '1'='1 HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet231.png}
+\end{center}
 
 \textbf{Analysis:} This is a classic boolean-based SQL injection attempting to bypass authentication. The payload \texttt{' OR '1'='1} is designed to make the SQL WHERE clause always evaluate to true, potentially granting unauthorized access.
 
@@ -409,8 +414,13 @@ GET /login.php?user=test' OR '1'='1 HTTP/1.1
 \begin{lstlisting}
 GET /login.php?user=test' OR 1=1-- HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet241.png}
+\end{center}
 
 \textbf{Analysis:} This attack uses SQL comment syntax (\texttt{--}) to terminate the query, bypassing any additional conditions after the injection point.
 
@@ -424,8 +434,13 @@ GET /login.php?user=test' OR 1=1-- HTTP/1.1
 \begin{lstlisting}
 GET /products.php?id=5' UNION SELECT NULL-- HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet375.png}
+\end{center}
 
 \textbf{Analysis:} UNION-based injection attempts to combine results from multiple tables. The attacker is probing column count with NULL values.
 
@@ -439,8 +454,13 @@ GET /products.php?id=5' UNION SELECT NULL-- HTTP/1.1
 \begin{lstlisting}
 GET /search.php?q=' UNION SELECT username,password FROM users-- HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet450.png}
+\end{center}
 
 \textbf{Analysis:} This is a targeted attack attempting to extract username and password columns from a ``users'' table using UNION injection.
 
@@ -454,8 +474,13 @@ GET /search.php?q=' UNION SELECT username,password FROM users-- HTTP/1.1
 \begin{lstlisting}
 GET /search.php?q=' UNION SELECT table_name FROM information_schema.tables-- HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet460.png}
+\end{center}
 
 \textbf{Analysis:} The attacker is attempting to enumerate database tables using the information\_schema, indicating an attempt to map the database structure.
 
@@ -469,8 +494,13 @@ GET /search.php?q=' UNION SELECT table_name FROM information_schema.tables-- HTT
 \begin{lstlisting}
 GET /search.php?q=' AND SLEEP(2)-- HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet470.png}
+\end{center}
 
 \textbf{Analysis:} Time-based blind injection uses the SLEEP function to infer information based on response delays, useful when no visible output is returned.
 
@@ -484,8 +514,13 @@ GET /search.php?q=' AND SLEEP(2)-- HTTP/1.1
 \begin{lstlisting}
 GET /search.php?q='; DROP TABLE users-- HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet484.png}
+\end{center}
 
 \textbf{Analysis:} This is a destructive SQL injection attempting to delete the users table entirely. This represents an intentional sabotage attempt.
 
@@ -503,8 +538,13 @@ Multiple XSS attack variants were detected, targeting search and comment functio
 \begin{lstlisting}
 GET /search.php?q=<script>alert(1)</script> HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 404 Not Found
+\textbf{Server Response:} HTTP 404 Not Found\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet275.png}
+\end{center}
 
 \textbf{Analysis:} Classic reflected XSS using script tags to execute JavaScript in the victim's browser.
 
@@ -518,8 +558,13 @@ GET /search.php?q=<script>alert(1)</script> HTTP/1.1
 \begin{lstlisting}
 GET /comment.php?text=<img src=x onerror=alert(1)> HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet288.png}
+\end{center}
 
 \textbf{Analysis:} This XSS variant uses an image tag with an invalid source to trigger the onerror event handler.
 
@@ -533,8 +578,13 @@ GET /comment.php?text=<img src=x onerror=alert(1)> HTTP/1.1
 \begin{lstlisting}
 GET /search.php?q=<svg onload=alert(1)> HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet547.png}
+\end{center}
 
 \textbf{Analysis:} SVG-based XSS is often used to bypass basic input filters that only check for script tags.
 
@@ -548,8 +598,13 @@ GET /search.php?q=<svg onload=alert(1)> HTTP/1.1
 \begin{lstlisting}
 GET /search.php?q=<iframe src=javascript:alert(1)> HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet558.png}
+\end{center}
 
 \textbf{Analysis:} Iframe-based XSS attempts to execute JavaScript via the src attribute using the javascript: protocol.
 
@@ -567,8 +622,13 @@ Multiple attempts to access system files through path traversal were detected.
 \begin{lstlisting}
 GET /download.php?file=../../../etc/passwd HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 404 Not Found
+\textbf{Server Response:} HTTP 404 Not Found\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet298.png}
+\end{center}
 
 \textbf{Analysis:} Classic directory traversal attempting to read the Unix password file containing user account information.
 
@@ -582,8 +642,13 @@ GET /download.php?file=../../../etc/passwd HTTP/1.1
 \begin{lstlisting}
 GET /view.php?page=../../../../etc/shadow HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 404 Not Found
+\textbf{Server Response:} HTTP 404 Not Found\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet308.png}
+\end{center}
 
 \textbf{Analysis:} Attempting to access the shadow file which contains hashed passwords. This indicates the attacker's intent to crack credentials.
 
@@ -597,8 +662,13 @@ GET /view.php?page=../../../../etc/shadow HTTP/1.1
 \begin{lstlisting}
 GET /download.php?file=../../../../../var/log/apache2/access.log HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 404 Not Found
+\textbf{Server Response:} HTTP 404 Not Found\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet627.png}
+\end{center}
 
 \textbf{Analysis:} Accessing Apache logs can reveal application behavior, other users' activities, and potentially be used for log poisoning attacks.
 
@@ -612,8 +682,13 @@ GET /download.php?file=../../../../../var/log/apache2/access.log HTTP/1.1
 \begin{lstlisting}
 GET /download.php?file=../../../../proc/self/environ HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 404 Not Found
+\textbf{Server Response:} HTTP 404 Not Found\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet637.png}
+\end{center}
 
 \textbf{Analysis:} Accessing /proc/self/environ can reveal environment variables including database credentials, API keys, and system configurations.
 
@@ -631,8 +706,13 @@ Two command injection attempts were detected targeting diagnostic endpoints.
 \begin{lstlisting}
 GET /ping.php?host=127.0.0.1; cat /etc/passwd HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet661.png}
+\end{center}
 
 \textbf{Analysis:} Using semicolon to chain commands, attempting to append ``cat /etc/passwd'' to read system users.
 
@@ -646,8 +726,13 @@ GET /ping.php?host=127.0.0.1; cat /etc/passwd HTTP/1.1
 \begin{lstlisting}
 GET /system.php?cmd=ls | whoami HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet671.png}
+\end{center}
 
 \textbf{Analysis:} Using pipe character to chain the ``whoami'' command, attempting to identify the running user context.
 
@@ -714,6 +799,26 @@ Packet 976: USER admin / Packet 982: 530 Login incorrect
 \textbf{Server Response:} Multiple 530 Login incorrect responses detected.
 \end{attackbox}
 
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet940.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet960.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet966.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet976.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet982.png}
+\end{center}
+
 \textbf{Analysis:} The attacker first verified connectivity with an anonymous login (Packet 940). Following this, a dictionary attack was launched against the 'admin' user starting at Packet 960, resulting in multiple authentication failures.
 
 \subsection{Persistence \& Web Shell Activity}
@@ -729,8 +834,13 @@ Following command injection attempts, the attacker tried to establish a permanen
 \begin{lstlisting}
 GET /system.php?cmd=echo 'backdoor' > /tmp/persist.sh HTTP/1.1
 \end{lstlisting}
-\textbf{Server Response:} HTTP 400 Bad Request
+\textbf{Server Response:} HTTP 400 Bad Request\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet1428.png}
+\end{center}
 
 \textbf{Analysis:} At Packet 1428, the attacker attempted to write a file named \texttt{persist.sh} to the \texttt{/tmp/} directory using the command injection vulnerability. A second attempt was observed at Packet 2974.
 
@@ -748,6 +858,18 @@ Packet 835: GET /api/users?id=2
 Packet 1364: GET /api/users?limit=100&offset=100
 \end{lstlisting}
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet825.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet835.png}
+\end{center}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet1364.png}
+\end{center}
 
 \textbf{Analysis:} The attacker sequentially enumerated user IDs starting at Packet 825. Later, at Packet 1364, an attempt was made to retrieve a bulk list of users using limit/offset parameters.
 
@@ -776,8 +898,13 @@ GET /metrics HTTP/1.1
 \textbf{Packet Number:} 1402\\
 \textbf{Target Endpoint:} /upload.php\\
 \textbf{Method:} POST\\
-\textbf{Response Code:} 404 Not Found
+\textbf{Response Code:} 404 Not Found\\
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet1402.png}
+\end{center}
 
 \textbf{Analysis:} At Packet 1402, the attacker attempted to \texttt{POST} data to \texttt{/upload.php}. While the server responded with 404, this indicates the attacker was actively searching for a file upload vector to potentially deploy the web shell identified in Finding \#20.
 
@@ -791,12 +918,23 @@ GET /metrics HTTP/1.1
 \begin{lstlisting}
 POST /comment.php (application/x-www-form-urlencoded)
 \end{lstlisting}
+
 \end{attackbox}
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/follow-tcp/packet506.png}
+\end{center}
 
 \textbf{Analysis:} Unlike the previous GET-based Reflected XSS attempts, these packets (506-526) use the \texttt{POST} method. This confirms the attacker was attempting to perform **Stored Cross-Site Scripting** by saving malicious scripts into the application's comment database.
 
 % Attack Timeline
 \section{Attack Timeline}
+
+The following I/O graph provides a visual representation of the attack traffic over time, showing the intensity and distribution of different attack types throughout the capture period.
+
+\begin{center}
+\includegraphics[width=0.95\textwidth]{evidence/io/io-graph.png}
+\end{center}
 
 The attack can be divided into six distinct phases based on the captured traffic patterns:
 
